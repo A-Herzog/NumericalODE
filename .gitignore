@@ -1,0 +1,7 @@
+.vscode
+.tmp
+bin
+dist
+NumericalODE.exe
+NumericalODE_Linux_MacOS.zip
+desktop-app/2_Sign.bat
