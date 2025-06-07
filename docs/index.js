@@ -40,7 +40,7 @@ function start() {
       "<a class='dropdown-item bi bi-file-zip' href='https://github.com/A-Herzog/NumericalODE/releases/latest/download/NumericalODE_Linux_MacOS.zip'>&nbsp;"+language.GUI.downloadButtonZip+"</a>"
     ];
     downloadBlock+="<p class='mt-3'>"+language.GUI.downloadLabel+"</p><p><div class='dropdown'>"+downloadButton+"<ul class='dropdown-menu'><li>"+downloadOptions.join("</li><li>")+"</li></ul>"+"</div></p>";
-    //downloadInfoArea.innerHTML=downloadBlock;
+    downloadInfoArea.innerHTML=downloadBlock;
   }
 }
 

@@ -10,12 +10,10 @@ To use numerical differential equation solver just go to
 
 ![Website status](https://img.shields.io/website?url=https%3A%2F%2Fa-herzog.github.io%2FNumericalODE%2F)
 
-<!--
 You can also download numerical differential equation solver as an offline usable application:
 
 * **[NumericalODE.exe](https://github.com/A-Herzog/NumericalODE/releases/latest/download/NumericalODE.exe)**
 * **[NumericalODE_Linux_MacOS.zip](https://github.com/A-Herzog/NumericalODE/releases/latest/download/NumericalODE_Linux_MacOS.zip)**
--->
 
 ## License
 
