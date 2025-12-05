@@ -2,6 +2,8 @@
 
 Numerical differential equation solver is a web service for calculating and showing soltions of ordinary differential equation (ODE) using numerical methods.
 
+[![Screenshot](Screenshot.png)](https://a-herzog.github.io/NumericalODE)
+
 ## Usage
 
 To use numerical differential equation solver just go to
