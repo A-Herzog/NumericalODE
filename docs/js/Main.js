@@ -33,6 +33,18 @@ const demoFunctions=[
     displaySolution: "b/exp(a)*exp(x)",
     calcFunction: "y",
     calcSolution: "b/exp(a)*exp(x)"
+  },
+  {
+    displayFunction: "-2*y",
+    displaySolution: "exp(-2*(x-a))*b",
+    calcFunction: "-2*y",
+    calcSolution: "exp(-2*(x-a))*b"
+  },
+  {
+    displayFunction: "y-x",
+    displaySolution: "exp(x)*((b-a-1)/exp(a))+x+1",
+    calcFunction: "y-x",
+    calcSolution: "exp(x)*((b-a-1)/exp(a))+x+1"
   }
 ];
 
@@ -103,6 +115,7 @@ function initGUILanguage() {
     option.selected=(i==0);
     selectFunction.appendChild(option);
   }
+  labelShowDirectionField.innerHTML=language.GUI.showDirectionField;
   const freeOption=document.createElement("option");
   freeOption.innerHTML="y'(x):=";
   freeOption.value=demoFunctions.length;
@@ -132,6 +145,8 @@ function initGUILanguage() {
 let chartOptions;
 let chartData={};
 let chart;
+
+let compiledFunction=null;
 
 /**
  * Initializes the GUI elements
@@ -174,10 +189,15 @@ function initGUI() {
     },
     animation: {duration: 0}
   };
-  const setup={type: 'line', data: chartData, options: chartOptions};
+  const chartPlugins=[{
+    id: 'customText',
+    afterDraw: (chart)=>drawVectorField(chart)
+  }];
+  const setup={type: 'line', data: chartData, options: chartOptions, plugins: chartPlugins};
   chart=new Chart(chartCanvas,setup);
 
   selectFunction.onchange=updateResults;
+  checkboxShowDirectionField.onchange=updateResults;
   inputFunction.oninput=updateResults;
   inputX0.oninput=updateResults;
   inputY0.oninput=updateResults;
@@ -185,6 +205,65 @@ function initGUI() {
   rangeStepWide.oninput=updateResults;
   selectMethod.onchange=updateResults;
   updateResults();
+}
+
+/**
+ * Draws the vector field in the background of the chart.
+ * @param {Object} chart Chart.js object
+ */
+function drawVectorField(chart) {
+  if (compiledFunction==null) return;
+  if (!checkboxShowDirectionField.checked) return;
+
+  const xSteps=20;
+  const ySteps=20;
+
+  const xAxis=chart.scales['x'];
+  const yAxis=chart.scales['y'];
+  const minx=xAxis.min;;
+  const maxx=xAxis.max;
+  const miny=yAxis.min;
+  const maxy=yAxis.max;
+  const xUnit=(xAxis.getPixelForValue(maxx)-xAxis.getPixelForValue(minx))/xSteps;
+  const yUnit=(yAxis.getPixelForValue(maxy)-yAxis.getPixelForValue(miny))/ySteps;
+
+  for (let i=1;i<xSteps;i++) for (let j=1;j<ySteps;j++) { /* skip borders */
+    const x=minx+i/20*(maxx-minx);
+    const y=miny+j/20*(maxy-miny);
+
+    /* Start point */
+    const px=xAxis.getPixelForValue(x);
+    const py=yAxis.getPixelForValue(y);
+
+    /* End point */
+    const dy=compiledFunction.evaluate({x: x, y: y});
+    const angle=math.atan2(dy,1);
+    const qx=px+0.5*xUnit*math.cos(angle);
+    const qy=py+0.5*yUnit*math.sin(angle);
+
+    /* Arrow */
+    const a1x=qx-0.2*xUnit*math.cos(angle-math.pi/6);
+    const a1y=qy-0.2*yUnit*math.sin(angle-math.pi/6);
+    const a2x=qx-0.2*xUnit*math.cos(angle+math.pi/6);
+    const a2y=qy-0.2*yUnit*math.sin(angle+math.pi/6);
+
+    chart.ctx.strokeStyle="rgba(80,80,80,0.3)";
+
+    chart.ctx.beginPath();
+    chart.ctx.moveTo(px,py);
+    chart.ctx.lineTo(qx,qy);
+    chart.ctx.stroke();
+
+    chart.ctx.beginPath();
+    chart.ctx.moveTo(qx,qy);
+    chart.ctx.lineTo(a1x,a1y);
+    chart.ctx.stroke();
+
+    chart.ctx.beginPath();
+    chart.ctx.moveTo(qx,qy);
+    chart.ctx.lineTo(a2x,a2y);
+    chart.ctx.stroke();
+  }
 }
 
 /**
@@ -198,8 +277,12 @@ function getData() {
   inputFunction.style.display=isExact?"none":"inline-block";
 
   /* Function */
-  let compiledFunction=null;
-  if (!isExact) {
+  compiledFunction=null;
+  if (isExact) {
+    /* Needed to draw the vector field */
+    const parsed=math.parse(demoFunctions[mode].calcFunction);
+    compiledFunction=parsed.compile();
+  } else {
     inputFunction.classList.remove("is-invalid");
     try {
       const func=inputFunction.value.replace(new RegExp('\\,|\\;','g'),match=>match===','?'.':',');
@@ -481,7 +564,10 @@ function updateResults() {
 
     let minY=data.xyValuesNumerical.map(p=>p.y).reduce((a,b)=>Math.min(a,b));
     if (data.isExact) minY=Math.min(minY,xyValuesExact.map(p=>p.y).reduce((a,b)=>Math.min(a,b)));
-    chartOptions.scales.y.min=minY;
+    chartOptions.scales.y.min=Math.max(-100,minY);
+    let maxY=data.xyValuesNumerical.map(p=>p.y).reduce((a,b)=>Math.max(a,b));
+    if (data.isExact) maxY=Math.max(maxY,xyValuesExact.map(p=>p.y).reduce((a,b)=>Math.max(a,b)));
+    chartOptions.scales.y.max=Math.min(100,maxY);
 
     /* Calculate extrapolation error */
     if (data.isExact) {
