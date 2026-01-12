@@ -147,6 +147,7 @@ k<sub>4</sub>:=f(x+h,y+h&middot;k<sub>3</sub>)<br>
  y(x+h)=y(x)+h&middot;(1/6&middot;k<sub>1</sub>+1/3&middot;k<sub>2</sub>+1/3&middot;k<sub>3</sub>+1/6&middot;k<sub>4</sub>)
 </p>
 `);
+lang.GUI.functionEvaluations="Anzahl an Funktionsauswertungen";
 lang.GUI.resultAbsoluteError="Absoluter Fehler";
 lang.GUI.resultRelativeError="Relativer Fehler";
 lang.GUI.resultErrorInfo="(Die Abweichung zwischen exakter Lösung und Näherung wird jeweils an den Stützstellen bestimmt. Zwischen den Stützstellen kann die Abweichung noch größer ausfallen.)";
@@ -279,6 +280,7 @@ k<sub>4</sub>:=f(x+h,y+h&middot;k<sub>3</sub>)<br>
  y(x+h)=y(x)+h&middot;(1/6&middot;k<sub>1</sub>+1/3&middot;k<sub>2</sub>+1/3&middot;k<sub>3</sub>+1/6&middot;k<sub>4</sub>)
 </p>
 `);
+lang.GUI.functionEvaluations="Number of function evaluations";
 lang.GUI.resultAbsoluteError="Absolute error";
 lang.GUI.resultRelativeError="Relative error";
 lang.GUI.resultErrorInfo="(The difference between exact solution and approximation is determined in each case at the support points. The difference can be even greater between the support points.)";

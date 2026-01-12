@@ -375,31 +375,34 @@ function getData() {
 
   /* Numerical solution */
   result.displayNumerical=language.GUI.approxMethod[method]+", h="+stepWide.toLocaleString();
+  let algorithmResult;
   switch (method) {
     case 0:
-      result.xyValuesNumerical=getEuler(result);
+      algorithmResult=getEuler(result);
       break;
     case 1:
-      result.xyValuesNumerical=getHeun(result);
+      algorithmResult=getHeun(result);
       break;
     case 2:
-      result.xyValuesNumerical=getRK2(result);
+      algorithmResult=getRK2(result);
       break;
     case 3:
-      result.xyValuesNumerical=getRK3(result);
+      algorithmResult=getRK3(result);
       break;
     case 4:
-      result.xyValuesNumerical=getRK4(result);
+      algorithmResult=getRK4(result);
       break;
   }
 
+  result.xyValuesNumerical=algorithmResult.approx;
+  result.evaluations=algorithmResult.evaluations;
   return result;
 }
 
 /**
  * Numerical solution to an ODE using the explicit Euler method
  * @param {Object} data Input data
- * @returns Numerical approximation of the ODE
+ * @returns Numerical approximation of the ODE and needed function evaluations
  */
 function getEuler(data) {
   const h=data.h;
@@ -409,21 +412,23 @@ function getEuler(data) {
   let x=data.x0;
   let y=data.y0;
   const approx=[{x: x, y: y}];
+  let evaluations=0;
 
   while (x<=maxX) {
     const dy=f(x,y);
+    evaluations++;
     x+=h;
     y+=h*dy;
     approx.push({x: x, y: y});
   }
 
-  return approx;
+  return {approx: approx, evaluations: evaluations};
 }
 
 /**
  * Numerical solution to an ODE using the Heun method
  * @param {Object} data Input data
- * @returns Numerical approximation of the ODE
+ * @returns Numerical approximation of the ODE and needed function evaluations
  */
 function getHeun(data) {
   const h=data.h;
@@ -433,22 +438,24 @@ function getHeun(data) {
   let x=data.x0;
   let y=data.y0;
   const approx=[{x: x, y: y}];
+  let evaluations=0;
 
   while (x<=maxX) {
     const k1=f(x,y);
     const k2=f(x+h,y+h*k1);
+    evaluations+=2;
     x+=h;
     y+=h*(k1+k2)/2;
     approx.push({x: x, y: y});
   }
 
-  return approx;
+  return {approx: approx, evaluations: evaluations};
 }
 
 /**
  * Numerical solution to an ODE using the 2nd order Runge-Kutta method
  * @param {Object} data Input data
- * @returns Numerical approximation of the ODE
+ * @returns Numerical approximation of the ODE and needed function evaluations
  */
 function getRK2(data) {
   const h=data.h;
@@ -458,22 +465,24 @@ function getRK2(data) {
   let x=data.x0;
   let y=data.y0;
   const approx=[{x: x, y: y}];
+  let evaluations=0;
 
   while (x<=maxX) {
     const k1=f(x,y);
     const k2=f(x+h/2,y+h/2*k1);
+    evaluations+=2;
     x+=h;
     y+=h*k2;
     approx.push({x: x, y: y});
   }
 
-  return approx;
+  return {approx: approx, evaluations: evaluations};
 }
 
 /**
  * Numerical solution to an ODE using the 3rd order Runge-Kutta method
  * @param {Object} data Input data
- * @returns Numerical approximation of the ODE
+ * @returns Numerical approximation of the ODE and needed function evaluations
  */
 function getRK3(data) {
   const h=data.h;
@@ -483,23 +492,25 @@ function getRK3(data) {
   let x=data.x0;
   let y=data.y0;
   const approx=[{x: x, y: y}];
+  let evaluations=0;
 
   while (x<=maxX) {
     const k1=f(x,y);
     const k2=f(x+h/2,y+h/2*k1);
     const k3=f(x+h,y-h*k1+2*h*k2);
+    evaluations+=3;
     x+=h;
     y+=h*(1/6*k1+4/6*k2+1/6*k3);
     approx.push({x: x, y: y});
   }
 
-  return approx;
+  return {approx: approx, evaluations: evaluations};
 }
 
 /**
  * Numerical solution to an ODE using the 4th order Runge-Kutta method
  * @param {Object} data Input data
- * @returns Numerical approximation of the ODE
+ * @returns Numerical approximation of the ODE and needed function evaluations
  */
 function getRK4(data) {
   const h=data.h;
@@ -509,18 +520,20 @@ function getRK4(data) {
   let x=data.x0;
   let y=data.y0;
   const approx=[{x: x, y: y}];
+  let evaluations=0;
 
   while (x<=maxX) {
     const k1=f(x,y);
     const k2=f(x+h/2,y+h/2*k1);
     const k3=f(x+h/2,y+h/2*k2);
     const k4=f(x+h,y+h*k3);
+    evaluations+=4;
     x+=h;
     y+=h*(1/6*k1+1/3*k2+1/3*k3+1/6*k4);
     approx.push({x: x, y: y});
   }
 
-  return approx;
+  return {approx: approx, evaluations: evaluations};
 }
 
 /**
@@ -581,6 +594,7 @@ function updateResults() {
       }
       absError/=count;
       relError/=count;
+      result.push(language.GUI.functionEvaluations+"="+data.evaluations);
       result.push(language.GUI.resultAbsoluteError+"="+absError.toLocaleString());
       result.push(language.GUI.resultRelativeError+"="+(relError*100).toLocaleString()+"%");
       result.push(language.GUI.resultErrorInfo);
