@@ -392,6 +392,9 @@ function getData() {
     case 4:
       algorithmResult=getRK4(result);
       break;
+    case 5:
+      algorithmResult=getRKF45(result);
+      break;
   }
 
   result.xyValuesNumerical=algorithmResult.approx;
@@ -530,6 +533,37 @@ function getRK4(data) {
     evaluations+=4;
     x+=h;
     y+=h*(1/6*k1+1/3*k2+1/3*k3+1/6*k4);
+    approx.push({x: x, y: y});
+  }
+
+  return {approx: approx, evaluations: evaluations};
+}
+
+/**
+ * Numerical solution to an ODE using the 4th and 5th order Runge-Kutta-Fehlberg method
+ * @param {Object} data Input data
+ * @returns Numerical approximation of the ODE and needed function evaluations
+ */
+function getRKF45(data) {
+  const h=data.h;
+  const f=data.calcFunction;
+  const maxX=data.maxX;
+
+  let x=data.x0;
+  let y=data.y0;
+  const approx=[{x: x, y: y}];
+  let evaluations=0;
+
+  while (x<=maxX) {
+    const k1=f(x,y);
+    const k2=f(x+h/4,y+h/4*k1);
+    const k3=f(x+3*h/8,y+3*h/32*k1+9*h/32*k2);
+    const k4=f(x+12*h/13,y+1932*h/2197*k1-7200*h/2197*k2+7296*h/2197*k3);
+    const k5=f(x+h,y+439*h/216*k1-8*h*k2+3680*h/513*k3-845*h/4104*k4);
+    const k6=f(x+h/2,y-8*h/27*k1+2*h*k2-3544*h/2565*k3+1859*h/4104*k4-11*h/40*k5);
+    evaluations+=6;
+    x+=h;
+    y+=h*(16/135*k1+6656/12825*k3+28561/56430*k4-9/50*k5+2/55*k6);
     approx.push({x: x, y: y});
   }
 

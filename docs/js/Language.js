@@ -64,12 +64,14 @@ lang.GUI.methodName.push("Heun-Verfahren");
 lang.GUI.methodName.push("Runge-Kutta-Verfahren 2. Ordnung");
 lang.GUI.methodName.push("Runge-Kutta-Verfahren 3. Ordnung");
 lang.GUI.methodName.push("Runge-Kutta-Verfahren 4. Ordnung");
+lang.GUI.methodName.push("Runge-Kutta-Fehlberg-Verfahren 4. und 5. Ordnung");
 lang.GUI.approxMethod=[];
 lang.GUI.approxMethod.push("Näherung mit explizitem Eulerverfahren");
 lang.GUI.approxMethod.push("Näherung mit Heun-Verfahren");
 lang.GUI.approxMethod.push("Näherung mit Runge-Kutta-Verfahren 2. Ordnung");
 lang.GUI.approxMethod.push("Näherung mit Runge-Kutta-Verfahren 3. Ordnung");
 lang.GUI.approxMethod.push("Näherung mit Runge-Kutta-Verfahren 4. Ordnung");
+lang.GUI.approxMethod.push("Näherung mit Runge-Kutta-Fehlberg-Verfahren der 4. und 5. Ordnung");
 lang.GUI.methodInfo=[];
 lang.GUI.methodInfo.push(`
 <p><b>Explizites Eulerverfahren</b></p>
@@ -132,7 +134,7 @@ y(x+h)=y(x)+h&middot;(1/6&middot;k<sub>1</sub>+4/6&middot;k<sub>2</sub>+1/6&midd
 </p>
 `);
 lang.GUI.methodInfo.push(`
-<p><b>Klassische Runge-Kutta-Methode 4. Ordnung</b></p>
+<p><b>Runge-Kutta-Methode 4. Ordnung</b></p>
 <p>
 Die Differentialgleichung wird nun in jedem Schritt mehrfach ausgewertet, nämlich an der aktuellen Stelle, zweimal an einem Zwischenschritt sowie an der nächsten Stelle.
 Alle die vier Informationen werden gewichtet und gehen in den nächsten Schritt ein.
@@ -144,7 +146,28 @@ k<sub>1</sub>:=f(x,y)<br>
 k<sub>2</sub>:=f(x+h/2,y+h/2&middot;k<sub>1</sub>)<br>
 k<sub>3</sub>:=f(x+h/2,y+h/2&middot;k<sub>2</sub>)<br>
 k<sub>4</sub>:=f(x+h,y+h&middot;k<sub>3</sub>)<br>
- y(x+h)=y(x)+h&middot;(1/6&middot;k<sub>1</sub>+1/3&middot;k<sub>2</sub>+1/3&middot;k<sub>3</sub>+1/6&middot;k<sub>4</sub>)
+y(x+h)=y(x)+h&middot;(1/6&middot;k<sub>1</sub>+1/3&middot;k<sub>2</sub>+1/3&middot;k<sub>3</sub>+1/6&middot;k<sub>4</sub>)
+</p>
+`);
+lang.GUI.methodInfo.push(`
+<p><b>Runge-Kutta-Fehlberg-Methode 4. und 5. Ordnung</b></p>
+<p>
+Die Differentialgleichung wird in jedem Schritt mehrfach ausgewertet, nämlich an der aktuellen Stelle, dreimal an einem Zwischenschritt sowie an der nächsten Stelle.
+Alle die sechs Informationen werden gewichtet und gehen in den nächsten Schritt ein.
+Es handelt sich um ein 6-stufiges explizites Runge-Kutta-Verfahren der Ordnung 4. und 5.
+</p>
+<p>
+f(x,y):=y'(x)<br>
+k<sub>1</sub>:=f(x,y)<br>
+k<sub>2</sub>:=f(x+h/4,y+h/4&middot;k<sub>1</sub>)<br>
+k<sub>3</sub>:=f(x+3&middot;h/8,y+3&middot;h/32&middot;k<sub>1</sub>+9&middot;h/32&middot;k<sub>2</sub>)<br>
+k<sub>4</sub>:=f(x+12&middot;h/13,y+1932&middot;h/2197&middot;k<sub>1</sub>-7200&middot;h/2197&middot;k<sub>2</sub>+7296&middot;h/2197&middot;k<sub>3</sub>)<br>
+k<sub>5</sub>:=f(x+h,y+439&middot;h/216&middot;k<sub>1</sub>-8&middot;h&middot;k<sub>2</sub>+3680&middot;h/513&middot;k<sub>3</sub>-845&middot;h/4104&middot;k<sub>4</sub>)<br>
+k<sub>6</sub>:=f(x+h/2,y=-8&middot;h/27&middot;k<sub>1</sub>+2&middot;h&middot;k<sub>2</sub>-3544&middot;h/2565&middot;k<sub>3</sub>+1859&middot;h/4104&middot;k<sub>4</sub>-11&middot;h/40&middot;k<sub>5</sub>)<br>
+y<sub>4</sub>(x+h)=y(x)+h&middot;(25/216&middot;k<sub>1</sub>+1408/2565&middot;k<sub>3</sub>+2197/4104&middot;k<sub>4</sub>-1/5&middot;k<sub>5</sub>)<br>
+y<sub>5</sub>(x+h)=y(x)+h&middot;(16/135&middot;k<sub>1</sub>+6656/12825&middot;k<sub>3</sub>+28561/56430&middot;k<sub>4</sub>-9/50&middot;k<sub>5</sub>+2/55&middot;k<sub>6</sub>)<br>
+Die optimale Schrittweite kann über den Vergleich von y<sub>4</sub> und y<sub>5</sub> bestimmt werden: s=(tol&middot;h/2/|y<sub>5</sub>-y<sub>4</sub>|)<sup>1/4</sup><br>
+(In dem Diagramm wird nur die 5. Ordnung dargestellt, d.h. y<sub>4</sub>.)
 </p>
 `);
 lang.GUI.functionEvaluations="Anzahl an Funktionsauswertungen";
@@ -198,12 +221,14 @@ lang.GUI.methodName.push("Heun method");
 lang.GUI.methodName.push("Runge-Kutta method of 2nd order");
 lang.GUI.methodName.push("Runge-Kutta-method of 3rd order");
 lang.GUI.methodName.push("Runge-Kutta method of 4th order");
+lang.GUI.methodName.push("Runge-Kutta-Fehlberg method of 4th and 5th order");
 lang.GUI.approxMethod=[];
 lang.GUI.approxMethod.push("Approximation with explicit Euler method");
 lang.GUI.approxMethod.push("Approximation with Heun method");
 lang.GUI.approxMethod.push("Approximation with Runge-Kutta method of 2nd order");
 lang.GUI.approxMethod.push("Approximation with Runge-Kutta-method of 3rd order");
 lang.GUI.approxMethod.push("Approximation with Runge-Kutta method of 4th order");
+lang.GUI.approxMethod.push("Approximation with Runge-Kutta-Fehlberg method of 4th and 5th order");
 lang.GUI.methodInfo=[];
 lang.GUI.methodInfo.push(`
 <p><b>Explicit Euler method</b></p>
@@ -278,6 +303,27 @@ k<sub>2</sub>:=f(x+h/2,y+h/2&middot;k<sub>1</sub>)<br>
 k<sub>3</sub>:=f(x+h/2,y+h/2&middot;k<sub>2</sub>)<br>
 k<sub>4</sub>:=f(x+h,y+h&middot;k<sub>3</sub>)<br>
  y(x+h)=y(x)+h&middot;(1/6&middot;k<sub>1</sub>+1/3&middot;k<sub>2</sub>+1/3&middot;k<sub>3</sub>+1/6&middot;k<sub>4</sub>)
+</p>
+`);
+lang.GUI.methodInfo.push(`
+<p><b>Runge-Kutta-Fehlberg method of 4th order</b></p>
+<p>
+The differential equation is evaluated several times in each step, namely at the current position, three times at an intermediate step, and at the next position.
+All six pieces of information are weighted and incorporated into the next step.
+This is a 6-step explicit Runge-Kutta method of order 4 and 5.
+</p>
+<p>
+f(x,y):=y'(x)<br>
+k<sub>1</sub>:=f(x,y)<br>
+k<sub>2</sub>:=f(x+h/4,y+h/4&middot;k<sub>1</sub>)<br>
+k<sub>3</sub>:=f(x+3&middot;h/8,y+3&middot;h/32&middot;k<sub>1</sub>+9&middot;h/32&middot;k<sub>2</sub>)<br>
+k<sub>4</sub>:=f(x+12&middot;h/13,y+1932&middot;h/2197&middot;k<sub>1</sub>-7200&middot;h/2197&middot;k<sub>2</sub>+7296&middot;h/2197&middot;k<sub>3</sub>)<br>
+k<sub>5</sub>:=f(x+h,y+439&middot;h/216&middot;k<sub>1</sub>-8&middot;h&middot;k<sub>2</sub>+3680&middot;h/513&middot;k<sub>3</sub>-845&middot;h/4104&middot;k<sub>4</sub>)<br>
+k<sub>6</sub>:=f(x+h/2,y=-8&middot;h/27&middot;k<sub>1</sub>+2&middot;h&middot;k<sub>2</sub>-3544&middot;h/2565&middot;k<sub>3</sub>+1859&middot;h/4104&middot;k<sub>4</sub>-11&middot;h/40&middot;k<sub>5</sub>)<br>
+y<sub>4</sub>(x+h)=y(x)+h&middot;(25/216&middot;k<sub>1</sub>+1408/2565&middot;k<sub>3</sub>+2197/4104&middot;k<sub>4</sub>-1/5&middot;k<sub>5</sub>)<br>
+y<sub>5</sub>(x+h)=y(x)+h&middot;(16/135&middot;k<sub>1</sub>+6656/12825&middot;k<sub>3</sub>+28561/56430&middot;k<sub>4</sub>-9/50&middot;k<sub>5</sub>+2/55&middot;k<sub>6</sub>)<br>
+The optimal step size can be determined by comparing y<sub>4</sub> and y<sub>5</sub>: s=(tol&middot;h/2/|y<sub>5</sub>-y<sub>4</sub>|)<sup>1/4</sup><br>
+(The diagram only shows the 5th order, i.e. y<sub>5</sub>.)
 </p>
 `);
 lang.GUI.functionEvaluations="Number of function evaluations";
